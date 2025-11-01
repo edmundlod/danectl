@@ -810,9 +810,8 @@ new()
 dup()
 {
 	certname="$1"
-	domains="$*"
 	certname="$(echo "$certname" | sed 's/ .*$//')"
-	domains="$(echo "$domains" | sed 's/ /,/g')"
+	domains=$(openssl x509 -in /etc/letsencrypt/live/mail.proteamail.com-rsa/cert.pem -noout -text | grep -A1 "Subject Alternative Name" | tail -1 | sed 's/.*DNS://' | sed 's/, DNS:/,/g' | tr -d ' ')
 	[ ! -d "$le/live/$certname" ] && die "dup $certname: Failed to find live original $certname"
 	[ ! -d "$le/current/$certname" ] && die "dup $certname: Failed to find current original $certname"
 	[ -d "$le/live/$certname-duplicate" ] && die "dup $certname: Duplicate $certname-duplicate already exists"
